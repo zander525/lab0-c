@@ -245,16 +245,46 @@ void q_sort(struct list_head *head, bool descend) {}
  * the right side of it */
 int q_ascend(struct list_head *head)
 {
-    // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    return 0;
+    if (!head || list_empty(head))
+        return 0;
+
+    element_t *curr = list_entry(head->prev, element_t, list);
+    const char *min_so_far = curr->value;
+
+    while (&curr->list != head) {
+        element_t *prev = list_entry(curr->list.prev, element_t, list);
+        if (strcmp(curr->value, min_so_far) > 0) {
+            list_del(&curr->list);
+            q_release_element(curr);
+        } else {
+            min_so_far = curr->value;
+        }
+        curr = prev;
+    }
+    return q_size(head);
 }
 
 /* Remove every node which has a node with a strictly greater value anywhere to
  * the right side of it */
 int q_descend(struct list_head *head)
 {
-    // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    return 0;
+    if (!head || list_empty(head))
+        return 0;
+
+    element_t *curr = list_entry(head->prev, element_t, list);
+    const char *max_value = curr->value;
+
+    while (&curr->list != head) {
+        element_t *prev = list_entry(curr->list.prev, element_t, list);
+        if (strcmp(curr->value, max_value) < 0) {
+            list_del(&curr->list);
+            q_release_element(curr);
+        } else {
+            max_value = curr->value;
+        }
+        curr = prev;
+    }
+    return q_size(head);
 }
 
 /* Merge all the queues into one sorted queue, which is in ascending/descending
